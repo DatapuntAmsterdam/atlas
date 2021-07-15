@@ -1,15 +1,13 @@
 import type { FunctionComponent, MouseEvent as ReactMouseEvent } from 'react'
 import { useCallback, useState } from 'react'
 import styled, { css } from 'styled-components'
-import { Alert, Button, Checkbox, Icon, Label, themeColor, themeSpacing } from '@amsterdam/asc-ui'
+import { Alert, Checkbox, Icon, Label, themeColor, themeSpacing } from '@amsterdam/asc-ui'
 import { ChevronDown } from '@amsterdam/asc-assets'
 import { isAuthorised } from '../../legacy/utils/map-layer'
-import SearchPlus from '../../../../../shared/assets/icons/search-plus.svg'
 import LoginLink from '../../../../components/Links/LoginLink/LoginLink'
 import MapLayerWithLegendItem from './MapLayerWithLegendItem'
-import { zoomParam } from '../../query-params'
-import useParam from '../../../../utils/useParam'
 import type { ExtendedMapGroup, ExtendedMapGroupLegendItem } from '../../legacy/services'
+import MapLayerZoomButton from './MapLayerZoomButton'
 
 const StyledCheckbox = styled(Checkbox)`
   margin-left: ${themeSpacing(-1)};
@@ -20,6 +18,9 @@ const MapLayerWithLegendList = styled.ul`
   margin-left: ${themeSpacing(4)};
   width: 100%;
   order: 2;
+`
+const StyledLabel = styled(Label)`
+  text-align: left;
 `
 
 const StyledAlert = styled(Alert)`
@@ -47,11 +48,6 @@ const MapLayerItemStyle = styled.li`
   border-bottom: 1px solid ${themeColor('tint', 'level4')};
 `
 
-const ZoomButton = styled(Button)`
-  margin: 0 ${themeSpacing(3)} 0 auto;
-  order: 0;
-`
-
 // Make sure the "size" attribute won't be set in the HTML output
 const ChevronIcon = styled(Icon)<{ open: boolean }>`
   order: 1;
@@ -61,12 +57,6 @@ const ChevronIcon = styled(Icon)<{ open: boolean }>`
     css`
       transform: rotate(180deg);
     `}
-`
-
-const ZoomIcon = styled(Icon)`
-  svg path {
-    fill: ${themeColor('primary', 'main')};
-  }
 `
 
 interface MapLayerItemProps {
@@ -91,7 +81,6 @@ const MapLayerButton: FunctionComponent<MapLayerItemProps> = ({
   onRemoveLayers,
 }) => {
   const [open, setOpen] = useState(isEmbedView || layerIsChecked || false)
-  const [zoom, setZoom] = useParam(zoomParam)
 
   const onHandleChecked = useCallback(
     (event: ReactMouseEvent<HTMLInputElement>) => {
@@ -122,7 +111,7 @@ const MapLayerButton: FunctionComponent<MapLayerItemProps> = ({
           setOpen(!open)
         }}
       >
-        <Label
+        <StyledLabel
           htmlFor={mapGroup.id}
           className="map-legend__label"
           key={mapGroup.id}
@@ -141,26 +130,12 @@ const MapLayerButton: FunctionComponent<MapLayerItemProps> = ({
             name={mapGroup.title}
             onChange={onHandleChecked}
           />
-        </Label>
+        </StyledLabel>
         <ChevronIcon open={open} size={15}>
           <ChevronDown />
         </ChevronIcon>
 
-        {isAuthorised(mapGroup) && layerIsChecked && zoom < mapGroup.minZoom && (
-          <ZoomButton
-            title="Kaartlaag zichtbaar bij verder inzoomen"
-            size={26}
-            variant="blank"
-            onClick={(event) => {
-              event.stopPropagation()
-              setZoom(mapGroup.minZoom)
-            }}
-          >
-            <ZoomIcon size={16}>
-              <SearchPlus />
-            </ZoomIcon>
-          </ZoomButton>
-        )}
+        {isAuthorised(mapGroup) && layerIsChecked && <MapLayerZoomButton mapGroup={mapGroup} />}
       </ToggleButton>
       {!isAuthorised(mapGroup) && (
         <StyledAlert level="info">

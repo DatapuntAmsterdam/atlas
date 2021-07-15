@@ -4,6 +4,8 @@ import styled, { css } from 'styled-components'
 import { Checkbox, Label, themeColor, themeSpacing } from '@amsterdam/asc-ui'
 import MAP_CONFIG from '../../legacy/services/map.config'
 import type { ExtendedMapGroup } from '../../legacy/services'
+import { isAuthorised } from '../../legacy/utils/map-layer'
+import MapLayerZoomButton from './MapLayerZoomButton'
 
 const StyledLabel = styled(Label)`
   width: 100%;
@@ -103,6 +105,9 @@ const MapLayerWithLegendItem: FunctionComponent<MapLayerWithLegendItemProps> = (
           legendItem.title
         )}
       </LegendLabel>
+      {isAuthorised(legendItem) && legendItem.isVisible && (
+        <MapLayerZoomButton mapGroup={legendItem} />
+      )}
       <MapLegendImage>
         <img alt={legendItem.title} src={icon} />
       </MapLegendImage>
