@@ -260,6 +260,12 @@ export interface DataSelectionFilters {
 export const dataSelectionFiltersParam: UrlParam<DataSelectionFilters | null> = {
   name: 'filters',
   defaultValue: null,
-  decode: (value) => JSON.parse(value),
+  decode: (value) => {
+    try {
+      return JSON.parse(value)
+    } catch (error) {
+      return null
+    }
+  },
   encode: (value) => JSON.stringify(value),
 }

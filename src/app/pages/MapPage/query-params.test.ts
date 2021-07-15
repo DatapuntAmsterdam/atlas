@@ -2,6 +2,7 @@ import { v4 as uuid } from 'uuid'
 import encodeParam from '../../utils/encodeParam'
 import type { PolyDrawing } from './query-params'
 import {
+  dataSelectionFiltersParam,
   isEmbeddedParam,
   mapLayersParam,
   panoFovParam,
@@ -103,6 +104,25 @@ describe('mapLayersParam', () => {
       'foo',
       'bar',
     ])
+  })
+})
+
+describe('dataSelectionFiltersParam', () => {
+  it('should encode the value to parameter value', () => {
+    expect(dataSelectionFiltersParam.encode({ some: 'filter' })).toBe('{"some":"filter"}')
+  })
+
+  it('should decode the value from the parameter', () => {
+    expect(dataSelectionFiltersParam.decode('{"some": "filter"}')).toStrictEqual({ some: 'filter' })
+    expect(
+      dataSelectionFiltersParam.decode('{"woonplaats": "Amsterdam", "wijk": "Willemspark"}'),
+    ).toStrictEqual({
+      woonplaats: 'Amsterdam',
+      wijk: 'Willemspark',
+    })
+  })
+  it('should return null if the encoded value cannot be decoded', () => {
+    expect(dataSelectionFiltersParam.decode('not a json')).toStrictEqual(null)
   })
 })
 
