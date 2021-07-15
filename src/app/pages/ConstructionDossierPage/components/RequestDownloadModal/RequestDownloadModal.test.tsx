@@ -1,5 +1,5 @@
 import { Modal, ThemeProvider } from '@amsterdam/asc-ui'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { createUnsecuredToken, Json } from 'jsontokens'
 import type { FunctionComponent } from 'react'
 import { useEffect } from 'react'
@@ -114,11 +114,15 @@ describe('RequestDownloadModal', () => {
   it('handles a retry the in the error state', async () => {
     requestDownloadLinkMock.mockReturnValue(Promise.reject(new Error('Whoopsie')))
 
-    render(<RequestDownloadModal files={MOCK_FILES} onClose={() => {}} />, { wrapper })
+    act(() => {
+      render(<RequestDownloadModal files={MOCK_FILES} onClose={() => {}} />, { wrapper })
+    })
 
-    const retryButton = await waitFor(() => screen.findByText('Probeer opnieuw'))
+    await act(async () => {
+      const retryButton = await waitFor(() => screen.findByText('Probeer opnieuw'))
+      fireEvent.click(retryButton)
+    })
 
-    fireEvent.click(retryButton)
     expect(requestDownloadLinkMock).toHaveBeenCalledTimes(2)
   })
 
