@@ -1,4 +1,5 @@
-import { renderHook } from '@testing-library/react-hooks'
+// import { act } from '@testing-library/react'
+import { act, renderHook } from '@testing-library/react-hooks'
 import useDocumentTitle from './useDocumentTitle'
 import withAppContext from './withAppContext'
 
@@ -30,11 +31,12 @@ describe('useDocumentTitle', () => {
       wrapper: ({ children }) => withAppContext(<div>{children}</div>),
     })
 
-    const documentTitle = result.current.setDocumentTitle('Overridden Title', ['Some more', 'Info'])
+    act(() => {
+      result.current.setDocumentTitle('Overridden Title', ['Some more', 'Info'])
+    })
 
-    // Todo: eventually test the documentTitle from the hook! Couldn't get this to work now...
-    // ({ hook } = wrapper.find('div').props());
-    // const { documentTitle } = hook;
-    expect(documentTitle).toEqual('Overridden Title - Some more - Info - Data en informatie')
+    expect(result.current.documentTitle).toEqual(
+      'Overridden Title - Some more - Info - Data en informatie',
+    )
   })
 })
