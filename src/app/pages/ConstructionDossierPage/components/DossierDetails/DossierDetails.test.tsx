@@ -4,6 +4,7 @@ import { createUnsecuredToken, Json } from 'jsontokens'
 import type { FunctionComponent } from 'react'
 import { singleFixture as bouwdossierFixture } from '../../../../../api/iiif-metadata/bouwdossier'
 import withAppContext from '../../../../utils/withAppContext'
+import formatDossierAccessValue from '../../utils/formatDossierAccessValue'
 import AuthTokenContext, { DecodedToken } from '../../AuthTokenContext'
 import FilesGallery from '../FilesGallery'
 import DossierDetails from './DossierDetails'
@@ -79,7 +80,7 @@ describe('DossierDetails', () => {
 
       // 'Access' property is translated in the component
       if (element === 'access') {
-        value = 'Openbaar'
+        value = formatDossierAccessValue(value)
       }
 
       const definitionDescription = within(definitionList).getByText(`${value as string}`)
