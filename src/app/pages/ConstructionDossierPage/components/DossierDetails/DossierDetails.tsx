@@ -13,6 +13,7 @@ import { getScopes, isAuthenticated, SCOPES } from '../../../../../shared/servic
 import { FEATURE_KEYCLOAK_AUTH, isFeatureEnabled } from '../../../../features'
 import { toDataDetail } from '../../../../links'
 import formatAddresses from '../../utils/formatAddresses'
+import formatDossierAccessValue from '../../utils/formatDossierAccessValue'
 import hasUserRights from '../../utils/hasUserRights'
 import { useAuthToken } from '../../AuthTokenContext'
 import ContentBlock, { DefinitionList, DefinitionListItem, SubHeading } from '../ContentBlock'
@@ -130,7 +131,9 @@ const DossierDetails: FunctionComponent<DossierDetailsProps> = ({
           <DefinitionListItem term="Datering">{dossier.datering}</DefinitionListItem>
           <DefinitionListItem term="Type">{dossier.dossier_type}</DefinitionListItem>
           <DefinitionListItem term="Dossiernummer">{dossier.dossiernr}</DefinitionListItem>
-          <DefinitionListItem term="Openbaarheid">{dossier.access}</DefinitionListItem>
+          <DefinitionListItem term="Openbaarheid">
+            {formatDossierAccessValue(dossier.access)}
+          </DefinitionListItem>
           {dossier.olo_liaan_nummer ? (
             <DefinitionListItem term="OLO of liaan nummer" data-testid="oloLiaanNumber">
               {dossier.olo_liaan_nummer}

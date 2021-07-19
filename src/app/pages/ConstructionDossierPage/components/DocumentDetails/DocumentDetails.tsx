@@ -9,6 +9,7 @@ import type {
   Single as Bouwdossier,
 } from '../../../../../api/iiif-metadata/bouwdossier'
 import { getScopes, isAuthenticated } from '../../../../../shared/services/auth/auth'
+import formatDossierAccessValue from '../../utils/formatDossierAccessValue'
 import hasUserRights from '../../utils/hasUserRights'
 import { FEATURE_KEYCLOAK_AUTH, isFeatureEnabled } from '../../../../features'
 import { useAuthToken } from '../../AuthTokenContext'
@@ -125,7 +126,9 @@ const DocumentDetails: FunctionComponent<DocumentDetailsProps> = ({
               {document.oorspronkelijk_pad.join(', ')}
             </DefinitionListItem>
           )}
-          <DefinitionListItem term="Openbaarheid">{document.access}</DefinitionListItem>
+          <DefinitionListItem term="Openbaarheid">
+            {formatDossierAccessValue(document.access)}
+          </DefinitionListItem>
         </DefinitionList>
       ) : null}
       <GalleryContainer data-testid="filesGalleryContainer">
