@@ -2,8 +2,7 @@ import { constants, Map as MapComponent, Scale, useStateRef } from '@amsterdam/a
 import type { FunctionComponent } from 'react'
 import { useCallback, useEffect } from 'react'
 import type { Theme } from '@amsterdam/asc-ui'
-import { Alert, Link, Paragraph, themeSpacing } from '@amsterdam/asc-ui'
-import { Link as RouterLink } from 'react-router-dom'
+import { themeSpacing } from '@amsterdam/asc-ui'
 import styled, { createGlobalStyle, css } from 'styled-components'
 import type L from 'leaflet'
 import PanoramaViewer from './components/PanoramaViewer/PanoramaViewer'
@@ -15,8 +14,6 @@ import { centerParam, panoPitchParam, zoomParam } from './query-params'
 import MapPanel from './components/MapPanel'
 import { useDataSelection } from '../../components/DataSelection/DataSelectionContext'
 import { useIsEmbedded } from '../../contexts/ui'
-import { createCookie, getCookie } from '../../../shared/services/cookie/cookie'
-import { toBedieningPage } from '../../links'
 
 const MapView = styled.div`
   height: 100%;
@@ -80,8 +77,6 @@ const GlobalStyle = createGlobalStyle<{
 
 const { DEFAULT_AMSTERDAM_MAPS_OPTIONS } = constants
 
-const ALERT_COOKIE = 'map-update-alert-dismissed'
-
 const MapPage: FunctionComponent = () => {
   const { panoFullScreen, loading, panoActive } = useMapContext()
   const { drawToolLocked } = useDataSelection()
@@ -104,59 +99,45 @@ const MapPage: FunctionComponent = () => {
   }, [zoom])
 
   return (
-    <>
-      {/* Hide alert for 30 days after dismissing the alert */}
-      {!getCookie(ALERT_COOKIE) && (
-        <Alert level="warning" dismissible onDismiss={() => createCookie(ALERT_COOKIE, '1', 720)}>
-          <Paragraph>
-            De kaart en de werking van de tekentool zijn vernieuwd. Voor meer info kunt u de{' '}
-            <Link as={RouterLink} to={toBedieningPage()}>
-              help-pagina
-            </Link>{' '}
-            raadplegen.
-          </Paragraph>
-        </Alert>
-      )}
-      <MapView>
-        <GlobalStyle loading={loading} panoActive={panoActive} panoFullScreen={panoFullScreen} />
-        <MapComponent
-          setInstance={setMapInstance}
-          options={{
-            ...DEFAULT_AMSTERDAM_MAPS_OPTIONS,
-            zoom: zoom ?? DEFAULT_AMSTERDAM_MAPS_OPTIONS.zoom,
-            center: center ?? DEFAULT_AMSTERDAM_MAPS_OPTIONS.center,
-            attributionControl: false,
-            minZoom: 7,
-            scrollWheelZoom: !isEmbedded,
-          }}
-          events={{
-            zoomend: useCallback(() => {
-              if (mapInstanceRef?.current) {
-                setZoom(mapInstanceRef.current.getZoom(), 'replace')
-              }
-            }, [mapInstanceRef, setZoom]),
-            moveend: useCallback(() => {
-              if (mapInstanceRef?.current) {
-                setCenter(mapInstanceRef.current.getCenter(), 'replace')
-              }
-            }, [mapInstanceRef, setCenter]),
-          }}
-        >
-          <LeafletLayers />
+    <MapView>
+      <GlobalStyle loading={loading} panoActive={panoActive} panoFullScreen={panoFullScreen} />
+      <MapComponent
+        setInstance={setMapInstance}
+        options={{
+          ...DEFAULT_AMSTERDAM_MAPS_OPTIONS,
+          zoom: zoom ?? DEFAULT_AMSTERDAM_MAPS_OPTIONS.zoom,
+          center: center ?? DEFAULT_AMSTERDAM_MAPS_OPTIONS.center,
+          attributionControl: false,
+          minZoom: 7,
+          scrollWheelZoom: !isEmbedded,
+        }}
+        events={{
+          zoomend: useCallback(() => {
+            if (mapInstanceRef?.current) {
+              setZoom(mapInstanceRef.current.getZoom(), 'replace')
+            }
+          }, [mapInstanceRef, setZoom]),
+          moveend: useCallback(() => {
+            if (mapInstanceRef?.current) {
+              setCenter(mapInstanceRef.current.getCenter(), 'replace')
+            }
+          }, [mapInstanceRef, setCenter]),
+        }}
+      >
+        <LeafletLayers />
 
-          {panoActive && <PanoramaViewer />}
-          {!drawToolLocked && <MapMarker panoActive={panoActive} />}
-          <MapPanel />
-          <Scale
-            options={{
-              position: 'bottomright',
-              metric: true,
-              imperial: false,
-            }}
-          />
-        </MapComponent>
-      </MapView>
-    </>
+        {panoActive && <PanoramaViewer />}
+        {!drawToolLocked && <MapMarker panoActive={panoActive} />}
+        <MapPanel />
+        <Scale
+          options={{
+            position: 'bottomright',
+            metric: true,
+            imperial: false,
+          }}
+        />
+      </MapComponent>
+    </MapView>
   )
 }
 
