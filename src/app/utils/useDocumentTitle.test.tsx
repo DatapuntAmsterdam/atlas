@@ -1,4 +1,3 @@
-// import { act } from '@testing-library/react'
 import { act, renderHook } from '@testing-library/react-hooks'
 import useDocumentTitle from './useDocumentTitle'
 import withAppContext from './withAppContext'
