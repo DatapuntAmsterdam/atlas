@@ -75,9 +75,14 @@ describe('DossierDetails', () => {
     const listElements = ['titel', 'datering', 'dossier_type', 'dossiernr', 'access']
 
     listElements.forEach((element) => {
-      const definitionDescription = within(definitionList).getByText(
-        `${bouwdossierFixture[element] as string}`,
-      )
+      let value = bouwdossierFixture[element]
+
+      // 'Access' property is translated in the component
+      if (element === 'access') {
+        value = 'Openbaar'
+      }
+
+      const definitionDescription = within(definitionList).getByText(`${value as string}`)
       expect(definitionDescription).toBeInTheDocument()
     })
   })
