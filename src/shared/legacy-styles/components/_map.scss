@@ -1,7 +1,4 @@
 $dashboard-error-height: 32px;
-$map-preview-panel-top: 8px;
-$map-preview-panel-bottom: 16px + 34px + 2px + 34px + 10px;
 
-@import './map-panel';
 @import '~leaflet/dist/leaflet.css';
 @import '~leaflet-draw/dist/leaflet.draw.css';

@@ -11,7 +11,7 @@ interface HookSettings {
 const useFuse = <T>(
   list: T[],
   options: Fuse.IFuseOptions<T> = {},
-  hookSettings: HookSettings = { debounceWait: 300, showAllResultsByDefault: true },
+  hookSettings: HookSettings = { debounceWait: 100, showAllResultsByDefault: true },
 ) => {
   // This is not really an elegant solution, but as Fuse.js doesn't offer a solution for this, as it's only responsibility is filtering, we are stuck with this.
   // https://github.com/krisk/Fuse/issues/229

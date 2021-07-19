@@ -167,7 +167,7 @@ export type FilterOption = {
 
 export type LegendItem = {
   __typename?: 'LegendItem';
-  id?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
   isVisible?: Maybe<Scalars['Boolean']>;
   title: Scalars['String'];
   iconUrl?: Maybe<Scalars['String']>;
@@ -652,7 +652,7 @@ export type FilterOptionResolvers<ContextType = any, ParentType extends Resolver
 };
 
 export type LegendItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['LegendItem'] = ResolversParentTypes['LegendItem']> = {
-  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isVisible?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   iconUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

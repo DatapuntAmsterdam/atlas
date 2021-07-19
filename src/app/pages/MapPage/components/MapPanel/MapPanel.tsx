@@ -14,7 +14,7 @@ import { locationParam, mapLayersParam } from '../../query-params'
 import DrawerOverlay, { DeviceMode, DrawerState } from '../DrawerOverlay'
 import { DrawerPanelHeader, LargeDrawerPanel, SmallDrawerPanel } from '../DrawerPanel'
 import DrawResults from '../DrawTool/DrawResults'
-import LegendPanel from '../LegendPanel/LegendPanel'
+import MapLayersPanel from '../MapLayersPanel'
 import useMapControls from './useMapControls'
 import { LEGEND_CLOSE } from '../../matomo-events'
 import DetailInfoBox from '../DetailPanel/DetailInfoBox'
@@ -157,7 +157,7 @@ const MapPanel: FunctionComponent = () => {
             <LegendDrawerPanelHeader onClose={onCloseLegend}>
               <TitleHeading styleAs="h2">Legenda</TitleHeading>
             </LegendDrawerPanelHeader>
-            <LegendPanel />
+            <MapLayersPanel />
           </SmallDrawerPanel>
         )}
       </DrawerOverlay>

@@ -21,7 +21,7 @@ const ZoomButton = styled(Button)`
   order: 0;
 `
 
-const MapLayerZoomButton: FunctionComponent<MapLayerZoomButtonProps> = ({ mapGroup }) => {
+const LayerLegendZoomButton: FunctionComponent<MapLayerZoomButtonProps> = ({ mapGroup }) => {
   const [zoom, setZoom] = useParam(zoomParam)
 
   return zoom < mapGroup.minZoom ? (
@@ -41,4 +41,4 @@ const MapLayerZoomButton: FunctionComponent<MapLayerZoomButtonProps> = ({ mapGro
   ) : null
 }
 
-export default MapLayerZoomButton
+export default LayerLegendZoomButton

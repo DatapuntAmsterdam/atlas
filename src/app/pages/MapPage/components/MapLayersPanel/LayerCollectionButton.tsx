@@ -41,7 +41,7 @@ const LayerButton = styled.button<LayerButtonProps>`
   }
 `
 
-const MapCollectionButton: FunctionComponent<{
+const LayerCollectionButton: FunctionComponent<{
   onClick: MouseEventHandler<HTMLButtonElement>
   title: string
   collectionIndeterminate: boolean
@@ -74,4 +74,4 @@ const MapCollectionButton: FunctionComponent<{
   )
 }
 
-export default MapCollectionButton
+export default LayerCollectionButton

@@ -21,6 +21,7 @@ query mapCollectionSearchQuery {
             legendIconURI
           }
           ... on LegendItem {
+            id
             title
             iconUrl
             imageRule

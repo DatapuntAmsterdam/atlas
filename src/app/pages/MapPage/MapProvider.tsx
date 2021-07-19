@@ -17,9 +17,13 @@ import useCompare from '../../utils/useCompare'
 import type { InfoBoxProps } from './legacy/types/details'
 import { useIsEmbedded } from '../../contexts/ui'
 import type { MapCollection } from '../../../api/cms_search/graphql'
-import type { MapPanelOverlay } from './components/MapLegendPanel/MapLegendPanel'
 // @ts-ignore
 import { mapCollectionSearchQuery } from '../../../api/cms_search/mapCollections.graphql'
+
+interface MapPanelOverlay {
+  id: string
+  isVisible: boolean
+}
 
 const MapContainer: FunctionComponent = ({ children }) => {
   const [activeMapLayers] = useParam(mapLayersParam)

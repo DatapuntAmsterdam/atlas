@@ -1,13 +1,14 @@
+import type Fuse from 'fuse.js'
 import type { FunctionComponent, MouseEvent as ReactMouseEvent } from 'react'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import styled, { css } from 'styled-components'
 import { Alert, Checkbox, Icon, Label, themeColor, themeSpacing } from '@amsterdam/asc-ui'
 import { ChevronDown } from '@amsterdam/asc-assets'
 import { isAuthorised } from '../../legacy/utils/map-layer'
 import LoginLink from '../../../../components/Links/LoginLink/LoginLink'
-import MapLayerWithLegendItem from './MapLayerWithLegendItem'
+import LayerLegend from './LayerLegend'
 import type { ExtendedMapGroup, ExtendedMapGroupLegendItem } from '../../legacy/services'
-import MapLayerZoomButton from './MapLayerZoomButton'
+import LayerLegendZoomButton from './LayerLegendZoomButton'
 
 const StyledCheckbox = styled(Checkbox)`
   margin-left: ${themeSpacing(-1)};
@@ -59,6 +60,12 @@ const ChevronIcon = styled(Icon)<{ open: boolean }>`
     `}
 `
 
+const StyledLayerLegend = styled(LayerLegend)`
+  &:last-of-type {
+    border-bottom: 0;
+  }
+`
+
 interface MapLayerItemProps {
   mapGroup: ExtendedMapGroup
   layerIsChecked: boolean
@@ -68,9 +75,10 @@ interface MapLayerItemProps {
   handleLayerToggle: any
   addOrRemoveLayer: any
   isEmbedView: boolean
+  matches?: readonly Fuse.FuseResultMatch[]
 }
 
-const MapLayerButton: FunctionComponent<MapLayerItemProps> = ({
+const LayerGroup: FunctionComponent<MapLayerItemProps> = ({
   mapGroup,
   layerIsChecked,
   layerIsIndeterminate,
@@ -79,6 +87,7 @@ const MapLayerButton: FunctionComponent<MapLayerItemProps> = ({
   handleLayerToggle,
   onAddLayers,
   onRemoveLayers,
+  matches,
 }) => {
   const [open, setOpen] = useState(isEmbedView || layerIsChecked || false)
 
@@ -103,6 +112,22 @@ const MapLayerButton: FunctionComponent<MapLayerItemProps> = ({
     },
     [addOrRemoveLayer, isEmbedView, layerIsIndeterminate, mapGroup, setOpen, open],
   )
+
+  const hasMatchedLegends = useMemo(
+    () =>
+      mapGroup?.legendItems?.some(({ title: mapLegendTitle }) =>
+        matches?.find(({ value }) => mapLegendTitle === value),
+      ),
+    [matches, mapGroup.legendItems],
+  )
+
+  /**
+   * Effect to automatically open the mapGroup when one of the legend items are matched
+   */
+  useEffect(() => {
+    setOpen(hasMatchedLegends ?? false)
+  }, [hasMatchedLegends])
+
   return (
     <MapLayerItemStyle>
       <ToggleButton
@@ -113,7 +138,6 @@ const MapLayerButton: FunctionComponent<MapLayerItemProps> = ({
       >
         <StyledLabel
           htmlFor={mapGroup.id}
-          className="map-legend__label"
           key={mapGroup.id}
           label={mapGroup.title}
           onClick={(event) => {
@@ -135,7 +159,7 @@ const MapLayerButton: FunctionComponent<MapLayerItemProps> = ({
           <ChevronDown />
         </ChevronIcon>
 
-        {isAuthorised(mapGroup) && layerIsChecked && <MapLayerZoomButton mapGroup={mapGroup} />}
+        {isAuthorised(mapGroup) && layerIsChecked && <LayerLegendZoomButton mapGroup={mapGroup} />}
       </ToggleButton>
       {!isAuthorised(mapGroup) && (
         <StyledAlert level="info">
@@ -144,23 +168,27 @@ const MapLayerButton: FunctionComponent<MapLayerItemProps> = ({
       )}
       {isAuthorised(mapGroup) && open && (
         <MapLayerWithLegendList>
-          {mapGroup.legendItems?.map((legendItem) => (
-            <MapLayerWithLegendItem
-              key={legendItem.id}
-              legendItem={
-                {
-                  ...mapGroup,
-                  ...legendItem,
-                } as ExtendedMapGroupLegendItem & ExtendedMapGroup
-              }
-              onAddLayers={onAddLayers}
-              onRemoveLayers={onRemoveLayers}
-            />
-          ))}
+          {mapGroup.legendItems
+            ?.filter(({ title }) =>
+              hasMatchedLegends ? matches?.find(({ value }) => value === title) : true,
+            )
+            .map((legendItem) => (
+              <StyledLayerLegend
+                key={legendItem.id}
+                legendItem={
+                  {
+                    ...mapGroup,
+                    ...legendItem,
+                  } as ExtendedMapGroupLegendItem & ExtendedMapGroup
+                }
+                onAddLayers={onAddLayers}
+                onRemoveLayers={onRemoveLayers}
+              />
+            ))}
         </MapLayerWithLegendList>
       )}
     </MapLayerItemStyle>
   )
 }
 
-export default MapLayerButton
+export default LayerGroup

@@ -5,7 +5,7 @@ import { Checkbox, Label, themeColor, themeSpacing } from '@amsterdam/asc-ui'
 import MAP_CONFIG from '../../legacy/services/map.config'
 import type { ExtendedMapGroup } from '../../legacy/services'
 import { isAuthorised } from '../../legacy/utils/map-layer'
-import MapLayerZoomButton from './MapLayerZoomButton'
+import LayerLegendZoomButton from './LayerLegendZoomButton'
 
 const StyledLabel = styled(Label)`
   width: 100%;
@@ -60,10 +60,11 @@ interface MapLayerWithLegendItemProps {
   onRemoveLayers: (id: string[]) => void
 }
 
-const MapLayerWithLegendItem: FunctionComponent<MapLayerWithLegendItemProps> = ({
+const LayerLegend: FunctionComponent<MapLayerWithLegendItemProps & Partial<HTMLLIElement>> = ({
   legendItem,
   onAddLayers,
   onRemoveLayers,
+  className,
 }) => {
   const LegendLabel = useMemo(
     () =>
@@ -78,7 +79,7 @@ const MapLayerWithLegendItem: FunctionComponent<MapLayerWithLegendItemProps> = (
     : new URL(`${MAP_CONFIG.OVERLAY_ROOT}${legendItem.legendIconURI as string}`).toString()
 
   return (
-    <MapLayerWithLegendStyle notSelectable={legendItem.notSelectable}>
+    <MapLayerWithLegendStyle notSelectable={legendItem.notSelectable} className={className}>
       <LegendLabel htmlFor={legendItem.id} label={legendItem.title}>
         {!legendItem.notSelectable ? (
           <StyledCheckbox
@@ -106,7 +107,7 @@ const MapLayerWithLegendItem: FunctionComponent<MapLayerWithLegendItemProps> = (
         )}
       </LegendLabel>
       {isAuthorised(legendItem) && legendItem.isVisible && (
-        <MapLayerZoomButton mapGroup={legendItem} />
+        <LayerLegendZoomButton mapGroup={legendItem} />
       )}
       <MapLegendImage>
         <img alt={legendItem.title} src={icon} />
@@ -115,4 +116,4 @@ const MapLayerWithLegendItem: FunctionComponent<MapLayerWithLegendItemProps> = (
   )
 }
 
-export default MapLayerWithLegendItem
+export default LayerLegend
