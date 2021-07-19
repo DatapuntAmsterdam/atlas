@@ -96,7 +96,7 @@
     "@types/lodash.isequal": "^4.5.5",
     "@types/marked": "^2.0.4",
     "@types/mini-css-extract-plugin": "^2.0.1",
-    "@types/node": "^15.12.5",
+    "@types/node": "^16.3.3",
     "@types/openseadragon": "^2.4.7",
     "@types/proj4": "^2.5.1",
     "@types/react": "^17.0.14",
