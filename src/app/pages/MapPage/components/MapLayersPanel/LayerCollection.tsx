@@ -116,7 +116,12 @@ const LayerCollection: FunctionComponent<MapLegendProps> = ({
     const layersToFilter = onlyInvisible ? layers.filter(({ isVisible }) => !isVisible) : layers
     const filteredMapLayers = layersToFilter
       .map((mapLayer) => {
-        if (mapLayer?.legendItems?.length && mapLayer?.legendItems?.every(({ id }) => id)) {
+        // Todo: legacy code in cms_search forces us to check if typename of legend items is MapGroup and get those id's, otherwise just use the parent mapgroup id
+        // This is very confusing, since legendItems can have a type of LegendItem or MapGroup.
+        if (
+          mapLayer?.legendItems?.length &&
+          mapLayer?.legendItems?.every(({ __typename }) => __typename === 'MapGroup')
+        ) {
           return mapLayer?.legendItems?.map((legendItem) => legendItem.id ?? '')
         }
         return mapLayer.id
