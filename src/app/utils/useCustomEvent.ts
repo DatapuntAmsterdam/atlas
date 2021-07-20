@@ -34,7 +34,7 @@ function useCustomEvent(
       target.removeEventListener(type, listener, options)
     }
     //  We need the location dependency, as we are using non-react event listeners
-  }, [listener])
+  }, [listener, target, type, options])
 }
 
 export default useCustomEvent
