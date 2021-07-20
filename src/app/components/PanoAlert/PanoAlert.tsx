@@ -4,6 +4,10 @@ import type { FunctionComponent } from 'react'
 
 const StyledAlert = styled(Alert)`
   margin-bottom: ${themeSpacing(2)};
+
+  @media print {
+    display: none;
+  }
 `
 
 const PanoAlert: FunctionComponent = () => (

@@ -340,7 +340,7 @@ const RenderDetails: FunctionComponent<RenderDetailsProps> = ({
     return <Message>Geen detailweergave beschikbaar.</Message>
   }
   return (
-    <div data-testid="data-detail">
+    <>
       {showNoMapObjectsAlert === true && (
         <Alert level="warning" dismissible>
           Er zijn geen resultaten op de kaart bij dit object
@@ -372,7 +372,7 @@ const RenderDetails: FunctionComponent<RenderDetailsProps> = ({
           </ItemWrapper>
         )
       })}
-    </div>
+    </>
   )
 }
 

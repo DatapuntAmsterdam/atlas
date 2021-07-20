@@ -30,6 +30,13 @@ const SubtitleHeading = styled(Heading)`
 
 const DrawerContainer = styled.div`
   padding: ${themeSpacing(0, 4)};
+
+  @media print {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-column-gap: ${themeSpacing(1)};
+    grid-row-gap: ${themeSpacing(1)};
+  }
 `
 
 const StyledLargeDrawerPanel = styled(LargeDrawerPanel)<{ show: boolean }>`

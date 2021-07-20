@@ -26,6 +26,7 @@ const DrawerPanel = styled.div<DrawerPanelProps>`
 
   @media print {
     position: relative;
+    width: 100% !important;
     page-break-before: always;
   }
 

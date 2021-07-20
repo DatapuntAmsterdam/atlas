@@ -2,7 +2,7 @@ import { MapPanelContext, Marker as ARMMarker } from '@amsterdam/arm-core'
 import { useMatomo } from '@datapunt/matomo-tracker-react'
 import type { LeafletMouseEvent } from 'leaflet'
 import type { FunctionComponent } from 'react'
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { matchPath, useHistory, useLocation } from 'react-router-dom'
 import { toDataDetail, toGeoSearch } from '../../../../links'
 import { routing } from '../../../../routes'
@@ -17,6 +17,7 @@ import { MARKER_SET } from '../../matomo-events'
 import { locationParam, polygonParam, zoomParam } from '../../query-params'
 import { SnapPoint } from '../../types'
 import PanoramaViewerMarker from '../PanoramaViewer/PanoramaViewerMarker'
+import useCustomEvent from '../../../../utils/useCustomEvent'
 
 export interface MarkerProps {
   panoActive: boolean
@@ -31,7 +32,7 @@ const MapMarker: FunctionComponent<MarkerProps> = ({ panoActive }) => {
   const history = useHistory()
   const { trackEvent } = useMatomo()
   const { buildQueryString } = useBuildQueryString()
-  const { panToWithPanelOffset } = useMapCenterToMarker()
+  const { panToWithPanelOffset, panToFitPrintMode } = useMapCenterToMarker()
 
   const { setPositionFromSnapPoint } = useRequiredContext(MapPanelContext)
 
@@ -66,6 +67,21 @@ const MapMarker: FunctionComponent<MarkerProps> = ({ panoActive }) => {
       })
     }
   }
+
+  const onHandleBeforePrint = useCallback(() => {
+    if (position) {
+      panToFitPrintMode(position)
+    }
+  }, [position])
+
+  const onHandleAfterPrint = useCallback(() => {
+    if (position) {
+      panToWithPanelOffset(position)
+    }
+  }, [position])
+
+  useCustomEvent(window, 'beforeprint', onHandleBeforePrint)
+  useCustomEvent(window, 'afterprint', onHandleAfterPrint)
 
   useEffect(() => {
     if (position && matchPath(location.pathname, routing.dataSearchGeo.path)) {

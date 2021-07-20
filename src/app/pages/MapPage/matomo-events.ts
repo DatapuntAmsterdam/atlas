@@ -121,3 +121,13 @@ export const DATASELECTION_MAP_BUTTON: TrackEventParams = {
   category: CATEGORY,
   action: 'dataselectie-kaart-toggle',
 }
+
+export const BEFORE_PRINT: TrackEventParams = {
+  category: CATEGORY,
+  action: 'print-dialoog-open',
+}
+
+export const AFTER_PRINT: TrackEventParams = {
+  category: CATEGORY,
+  action: 'print-dialoog-dicht',
+}

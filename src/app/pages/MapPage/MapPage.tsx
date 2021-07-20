@@ -5,6 +5,7 @@ import type { Theme } from '@amsterdam/asc-ui'
 import { themeSpacing } from '@amsterdam/asc-ui'
 import styled, { createGlobalStyle, css } from 'styled-components'
 import type L from 'leaflet'
+import { useMatomo } from '@datapunt/matomo-tracker-react'
 import PanoramaViewer from './components/PanoramaViewer/PanoramaViewer'
 import useParam from '../../utils/useParam'
 import LeafletLayers from './LeafletLayers'
@@ -14,6 +15,8 @@ import { centerParam, panoPitchParam, zoomParam } from './query-params'
 import MapPanel from './components/MapPanel'
 import { useDataSelection } from '../../components/DataSelection/DataSelectionContext'
 import { useIsEmbedded } from '../../contexts/ui'
+import { AFTER_PRINT, BEFORE_PRINT } from './matomo-events'
+import useCustomEvent from '../../utils/useCustomEvent'
 
 const MapView = styled.div`
   height: 100%;
@@ -22,10 +25,6 @@ const MapView = styled.div`
   overflow: hidden;
   display: flex;
   flex-direction: column;
-
-  @media print {
-    overflow: scroll;
-  }
 `
 
 const GlobalStyle = createGlobalStyle<{
@@ -34,6 +33,10 @@ const GlobalStyle = createGlobalStyle<{
   theme: Theme.ThemeInterface
   loading: boolean
 }>`
+  @page {
+    size: A4 portrait;
+  }
+
   body {
     touch-action: none;
     overflow: hidden; // This will prevent the scrollBar on iOS due to navigation bar
@@ -85,6 +88,15 @@ const MapPage: FunctionComponent = () => {
   const [zoom, setZoom] = useParam(zoomParam)
   const [panoPitch] = useParam(panoPitchParam)
   const isEmbedded = useIsEmbedded()
+  const { trackEvent } = useMatomo()
+
+  const onHandleBeforePrint = () => {
+    trackEvent(BEFORE_PRINT)
+  }
+
+  const onHandleAfterPrint = () => {
+    trackEvent(AFTER_PRINT)
+  }
 
   // This is necessary to call, because we resize the map dynamically
   // https://leafletjs.com/reference-1.7.1.html#map-invalidatesize
@@ -97,6 +109,9 @@ const MapPage: FunctionComponent = () => {
   useEffect(() => {
     mapInstanceRef.current?.setZoom(zoom)
   }, [zoom])
+
+  useCustomEvent(window, 'beforeprint', onHandleBeforePrint)
+  useCustomEvent(window, 'afterprint', onHandleAfterPrint)
 
   return (
     <MapView>

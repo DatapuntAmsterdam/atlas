@@ -3,13 +3,14 @@ import { GeoJSON, TileLayer } from '@amsterdam/react-maps'
 import type { GeoJSON as GeoJSONType, GeoJSONOptions } from 'leaflet'
 import { Icon, Marker } from 'leaflet'
 import type { FunctionComponent } from 'react'
-import { useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import useMapCenterToMarker from '../../utils/useMapCenterToMarker'
 import DrawMapVisualization from './components/DrawTool/DrawMapVisualization'
 import { DETAIL_ICON } from './config'
 import MAP_CONFIG from './legacy/services/map.config'
 import type { TmsOverlay, WmsOverlay } from './MapContext'
 import { useMapContext } from './MapContext'
+import useCustomEvent from '../../utils/useCustomEvent'
 
 const detailGeometryStyle = {
   color: 'red',
@@ -32,8 +33,9 @@ const detailGeometryOptions: GeoJSONOptions = {
 }
 
 const LeafletLayers: FunctionComponent = () => {
+  const [geoJSONLayer, setGeoJSONLayer] = useState<GeoJSONType<any>>()
   const { legendLeafletLayers, detailFeature } = useMapContext()
-  const { panToWithPanelOffset } = useMapCenterToMarker()
+  const { panToWithPanelOffset, panToFitPrintMode } = useMapCenterToMarker()
   const tmsLayers = useMemo(
     () => legendLeafletLayers.filter((overlay): overlay is TmsOverlay => overlay.type === 'tms'),
     [legendLeafletLayers],
@@ -44,11 +46,27 @@ const LeafletLayers: FunctionComponent = () => {
     [legendLeafletLayers],
   )
 
+  const onHandleBeforePrint = useCallback(() => {
+    if (geoJSONLayer) {
+      panToFitPrintMode(geoJSONLayer.getBounds())
+    }
+  }, [geoJSONLayer])
+
+  const onHandleAfterPrint = useCallback(() => {
+    if (geoJSONLayer) {
+      panToWithPanelOffset(geoJSONLayer.getBounds())
+    }
+  }, [geoJSONLayer])
+
+  useCustomEvent(window, 'beforeprint', onHandleBeforePrint)
+  useCustomEvent(window, 'afterprint', onHandleAfterPrint)
+
   /**
    * Center the map and zoom in to the detail object
    * @param layer
    */
   const handleDetailFeatureOnLoad = (layer: GeoJSONType<any>) => {
+    setGeoJSONLayer(layer)
     panToWithPanelOffset(layer.getBounds())
     layer.bringToBack()
   }
