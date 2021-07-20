@@ -3,11 +3,7 @@ import { ControlButton } from '@amsterdam/arm-core'
 import { Close } from '@amsterdam/asc-assets'
 import { useMatomo } from '@datapunt/matomo-tracker-react'
 import styled from 'styled-components'
-import { breakpoint } from '@amsterdam/asc-ui'
 import { useHistory, useLocation } from 'react-router-dom'
-import Reduce from './reduce.svg'
-import { useMapContext } from '../../MapContext'
-import Enlarge from './enlarge.svg'
 import {
   mapLayersParam,
   panoFovParam,
@@ -20,21 +16,13 @@ import useBuildQueryString from '../../../../utils/useBuildQueryString'
 import { PANO_LAYERS } from './PanoramaViewer'
 import useParam from '../../../../utils/useParam'
 import Control from '../Control'
-import { PANORAMA_CLOSE, PANORAMA_FULLSCREEN_TOGGLE } from '../../matomo-events'
-
-const ResizeButton = styled(ControlButton)`
-  margin-top: 2px;
-  @media screen and ${breakpoint('max-width', 'tabletM')} {
-    display: none; // below tabletM is always full screen, so no need to show this button
-  }
-`
+import { PANORAMA_CLOSE } from '../../matomo-events'
 
 const StyledControl = styled(Control)`
   align-self: flex-end;
 `
 
-const PanoramaControl = () => {
-  const { panoFullScreen, setPanoFullScreen } = useMapContext()
+const PanoramaCloseButton = () => {
   const history = useHistory()
   const browserLocation = useLocation()
   const { buildQueryString } = useBuildQueryString()
@@ -69,24 +57,8 @@ const PanoramaControl = () => {
         data-testid="panoramaViewerCloseButton"
         icon={<Close />}
       />
-      <ResizeButton
-        type="button"
-        variant="blank"
-        title="Volledig scherm"
-        size={44}
-        iconSize={40}
-        data-testid="panoramaViewerFullscreenButton"
-        onClick={() => {
-          trackEvent({
-            ...PANORAMA_FULLSCREEN_TOGGLE,
-            name: panoFullScreen ? 'klein' : 'volledig',
-          })
-          setPanoFullScreen(!panoFullScreen)
-        }}
-        icon={panoFullScreen ? <Reduce /> : <Enlarge />}
-      />
     </StyledControl>
   )
 }
 
-export default PanoramaControl
+export default PanoramaCloseButton

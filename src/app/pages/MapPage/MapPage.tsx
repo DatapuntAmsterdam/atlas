@@ -1,22 +1,23 @@
-import { constants, Map as MapComponent, Scale, useStateRef } from '@amsterdam/arm-core'
+import { useStateRef } from '@amsterdam/arm-core'
 import type { FunctionComponent } from 'react'
-import { useCallback, useEffect } from 'react'
+import { useEffect } from 'react'
 import type { Theme } from '@amsterdam/asc-ui'
 import { Alert, Link, Paragraph, themeSpacing } from '@amsterdam/asc-ui'
 import { Link as RouterLink } from 'react-router-dom'
 import styled, { createGlobalStyle, css } from 'styled-components'
 import type L from 'leaflet'
-import PanoramaViewer from './components/PanoramaViewer/PanoramaViewer'
 import useParam from '../../utils/useParam'
-import LeafletLayers from './LeafletLayers'
 import { useMapContext } from './MapContext'
-import MapMarker from './components/MapMarker'
-import { centerParam, panoPitchParam, zoomParam } from './query-params'
-import MapPanel from './components/MapPanel'
+import { panoPitchParam, zoomParam } from './query-params'
 import { useDataSelection } from '../../components/DataSelection/DataSelectionContext'
-import { useIsEmbedded } from '../../contexts/ui'
 import { createCookie, getCookie } from '../../../shared/services/cookie/cookie'
 import { toBedieningPage } from '../../links'
+
+import MapPanoramaFullScreen from './components/MapPanoramaFullScreen'
+import MapPanoramaMinimized from './components/MapPanoramaMinimized'
+
+import MapWithNoPanorama from './components/MapWithNoPanorama'
+// import MapWrapper from './components/MapWrapper'
 
 const MapView = styled.div`
   height: 100%;
@@ -49,12 +50,8 @@ const GlobalStyle = createGlobalStyle<{
   .leaflet-container {
     position: sticky !important;
     cursor: default;
-    height: ${({ panoActive }) => (panoActive ? '50%' : '100%')};
-    ${({ panoActive }) =>
-      panoActive &&
-      css`
-        border-top: 2px solid;
-      `};
+    height: 100%;
+    width: 100%;
 
     @media print {
       min-height: 100vh;
@@ -72,24 +69,33 @@ const GlobalStyle = createGlobalStyle<{
       css`
         display: none;
       `}
+
+    ${({ panoFullScreen, panoActive }) =>
+      !panoFullScreen &&
+      panoActive &&
+      css`
+        height: 50%;
+      `}
   }
   .leaflet-control-container .leaflet-control-scale {
     margin: ${themeSpacing(0, 16, 4, 0)} !important;
   }
 `
 
-const { DEFAULT_AMSTERDAM_MAPS_OPTIONS } = constants
+// const { DEFAULT_AMSTERDAM_MAPS_OPTIONS } = constants
 
 const ALERT_COOKIE = 'map-update-alert-dismissed'
 
 const MapPage: FunctionComponent = () => {
-  const { panoFullScreen, loading, panoActive } = useMapContext()
+  const { panoFullScreen, setPanoFullScreen, loading, panoActive } = useMapContext()
   const { drawToolLocked } = useDataSelection()
-  const [, setMapInstance, mapInstanceRef] = useStateRef<L.Map | null>(null)
-  const [center, setCenter] = useParam(centerParam)
-  const [zoom, setZoom] = useParam(zoomParam)
+  // const [, setMapInstance, mapInstanceRef] = useStateRef<L.Map | null>(null)
+  const [, , mapInstanceRef] = useStateRef<L.Map | null>(null)
+  // const [center, setCenter] = useParam(centerParam)
+  // const [zoom, setZoom] = useParam(zoomParam)
+  const [zoom] = useParam(zoomParam)
   const [panoPitch] = useParam(panoPitchParam)
-  const isEmbedded = useIsEmbedded()
+  // const isEmbedded = useIsEmbedded()
 
   // This is necessary to call, because we resize the map dynamically
   // https://leafletjs.com/reference-1.7.1.html#map-invalidatesize
@@ -119,42 +125,19 @@ const MapPage: FunctionComponent = () => {
       )}
       <MapView>
         <GlobalStyle loading={loading} panoActive={panoActive} panoFullScreen={panoFullScreen} />
-        <MapComponent
-          setInstance={setMapInstance}
-          options={{
-            ...DEFAULT_AMSTERDAM_MAPS_OPTIONS,
-            zoom: zoom ?? DEFAULT_AMSTERDAM_MAPS_OPTIONS.zoom,
-            center: center ?? DEFAULT_AMSTERDAM_MAPS_OPTIONS.center,
-            attributionControl: false,
-            minZoom: 7,
-            scrollWheelZoom: !isEmbedded,
-          }}
-          events={{
-            zoomend: useCallback(() => {
-              if (mapInstanceRef?.current) {
-                setZoom(mapInstanceRef.current.getZoom(), 'replace')
-              }
-            }, [mapInstanceRef, setZoom]),
-            moveend: useCallback(() => {
-              if (mapInstanceRef?.current) {
-                setCenter(mapInstanceRef.current.getCenter(), 'replace')
-              }
-            }, [mapInstanceRef, setCenter]),
-          }}
-        >
-          <LeafletLayers />
 
-          {panoActive && <PanoramaViewer />}
-          {!drawToolLocked && <MapMarker panoActive={panoActive} />}
-          <MapPanel />
-          <Scale
-            options={{
-              position: 'bottomright',
-              metric: true,
-              imperial: false,
-            }}
+        {panoActive && panoFullScreen ? (
+          <MapPanoramaFullScreen
+            panoFullScreen={panoFullScreen}
+            setPanoFullScreen={setPanoFullScreen}
           />
-        </MapComponent>
+        ) : null}
+
+        {panoActive && !panoFullScreen ? (
+          <MapPanoramaMinimized drawToolLocked={drawToolLocked} />
+        ) : null}
+
+        {!panoActive ? <MapWithNoPanorama drawToolLocked={drawToolLocked} /> : null}
       </MapView>
     </>
   )

@@ -56,7 +56,11 @@ export const PANO_LAYERS = [
   'pano-pano2016bi',
 ]
 
-const PanoramaViewer: FunctionComponent = () => {
+interface PanoramaViewerProps {
+  fullScreen: boolean
+}
+
+const PanoramaViewer: FunctionComponent<PanoramaViewerProps> = ({ fullScreen }) => {
   const ref = useRef<HTMLDivElement>(null)
   const { setPanoImageDate, setLoading, loading } = useMapContext()
   const [panoPitch] = useParam(panoPitchParam)
@@ -171,7 +175,7 @@ const PanoramaViewer: FunctionComponent = () => {
   }, [imageDataResult])
 
   return (
-    <PanoramaStyle loading={loading} panoFullScreen={panoFullScreen}>
+    <PanoramaStyle loading={loading} panoFullScreen={fullScreen}>
       <MarzipanoView ref={ref} />
     </PanoramaStyle>
   )

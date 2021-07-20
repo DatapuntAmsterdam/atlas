@@ -115,53 +115,52 @@ const MapPanel: FunctionComponent = () => {
   }, [matchPath, location, locationParameter, legendActive, activeFilters])
 
   return (
-    <>
-      <DrawerOverlay
-        mode={DeviceMode.Desktop}
-        controls={controls}
-        state={!showContentPanel && !legendActive ? DrawerState.Closed : drawerState}
-        onStateChange={setDrawerState}
-      >
-        {showContentPanel && (
-          <StyledLargeDrawerPanel data-testid="drawerPanel" show={!legendActive}>
-            <DrawerPanelHeader>
-              {panelHeader.type && <SubtitleHeading as="h6">{panelHeader.type}</SubtitleHeading>}
-              <TitleHeading styleAs="h2">{panelHeader.title}</TitleHeading>
-              {panelHeader.customElement && panelHeader.customElement}
-              {infoBox && <StyledDetailInfoBox {...infoBox} />}
-            </DrawerPanelHeader>
-            <DrawerContainer>
-              <Switch>
-                <Route path={routing.dataSearchGeo.path}>
-                  <MapSearchResults />
-                </Route>
-                <Route path={[routing.dataDetail.path]}>
-                  <DetailPanel />
-                </Route>
-                <Route
-                  path={[
-                    routing.addresses.path,
-                    routing.establishments.path,
-                    routing.cadastralObjects.path,
-                  ]}
-                  exact
-                >
-                  <DrawResults />
-                </Route>
-              </Switch>
-            </DrawerContainer>
-          </StyledLargeDrawerPanel>
-        )}
-        {legendActive && (
-          <SmallDrawerPanel data-testid="drawerPanel">
-            <LegendDrawerPanelHeader onClose={onCloseLegend}>
-              <TitleHeading styleAs="h2">Legenda</TitleHeading>
-            </LegendDrawerPanelHeader>
-            <LegendPanel />
-          </SmallDrawerPanel>
-        )}
-      </DrawerOverlay>
-    </>
+    <DrawerOverlay
+      mode={DeviceMode.Desktop}
+      controls={controls}
+      state={!showContentPanel && !legendActive ? DrawerState.Closed : drawerState}
+      onStateChange={setDrawerState}
+    >
+      {showContentPanel && (
+        <StyledLargeDrawerPanel data-testid="drawerPanel" show={!legendActive}>
+          <DrawerPanelHeader>
+            {panelHeader.type && <SubtitleHeading as="h6">{panelHeader.type}</SubtitleHeading>}
+            <TitleHeading styleAs="h2">{panelHeader.title}</TitleHeading>
+            {panelHeader.customElement && panelHeader.customElement}
+            {infoBox && <StyledDetailInfoBox {...infoBox} />}
+          </DrawerPanelHeader>
+          <DrawerContainer>
+            <Switch>
+              <Route path={routing.dataSearchGeo.path}>
+                <MapSearchResults />
+              </Route>
+              <Route path={[routing.dataDetail.path]}>
+                <DetailPanel />
+              </Route>
+              <Route
+                path={[
+                  routing.addresses.path,
+                  routing.establishments.path,
+                  routing.cadastralObjects.path,
+                ]}
+                exact
+              >
+                <DrawResults />
+              </Route>
+            </Switch>
+          </DrawerContainer>
+        </StyledLargeDrawerPanel>
+      )}
+
+      {legendActive && (
+        <SmallDrawerPanel data-testid="drawerPanel">
+          <LegendDrawerPanelHeader onClose={onCloseLegend}>
+            <TitleHeading styleAs="h2">Legenda</TitleHeading>
+          </LegendDrawerPanelHeader>
+          <LegendPanel />
+        </SmallDrawerPanel>
+      )}
+    </DrawerOverlay>
   )
 }
 
